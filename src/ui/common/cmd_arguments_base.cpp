@@ -11,14 +11,14 @@ using namespace std;
 using namespace SimpleOpt;
 
 enum {
-    HELP=30000, VERSION, VERBOSE, QUIET, USE_STDIN, OUT_FILE, SEED, MODEL
+    HELP=30000, VERSION, VERBOSE, QUIET, USE_STDIN, OUT_FILE, SEED, MODEL, LABELS_FILE
 };
 
 CommandLineArgumentsBase::CommandLineArgumentsBase(
         const std::string programName, const std::string version) :
     m_executableName(programName), m_versionNumber(version),
     m_options(),
-    inputFile(), verbosity(1), outputFile(),
+    inputFile(), verbosity(1), outputFile(), labelsFile(),
     modelType(UNDIRECTED_BLOCKMODEL), randomSeed(time(0)) {
 
     addOption(USE_STDIN, "-", SO_NONE);
@@ -31,6 +31,7 @@ CommandLineArgumentsBase::CommandLineArgumentsBase(
     addOption(QUIET,   "-q", SO_NONE, "--quiet");
 
     addOption(OUT_FILE, "-o", SO_REQ_SEP, "--output");
+    addOption(LABELS_FILE, "-l", SO_REQ_SEP, "--labels");
 
     addOption(SEED,  "--seed",  SO_REQ_SEP);
     addOption(MODEL, "--model", SO_REQ_SEP);
@@ -97,6 +98,11 @@ void CommandLineArgumentsBase::parse(int argc, char** argv) {
             /* Processing basic algorithm parameters */
             case OUT_FILE:
                 outputFile = args.OptionArg();
+                break;
+
+            /* When partially labeled */
+            case LABELS_FILE:
+                labelsFile = args.OptionArg();
                 break;
 
             /* Processing advanced algorithm parameters */

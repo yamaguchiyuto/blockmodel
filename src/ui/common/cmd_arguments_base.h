@@ -42,6 +42,9 @@ public:
     /// Name of the output file
     std::string outputFile;
 
+    /// Name of the labels file
+    std::string labelsFile;
+
     /// Model type used by the fitting process
     ModelType modelType;
 

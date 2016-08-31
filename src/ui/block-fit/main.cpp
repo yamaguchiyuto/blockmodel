@@ -5,6 +5,7 @@
 #include <iostream>
 #include <limits>
 #include <memory>
+#include <fstream>
 #include <sstream>
 #include <block/blockmodel.h>
 #include <block/convergence.h>
@@ -189,6 +190,11 @@ public:
         return result;
     }
 
+    /// Loads labels from the given file (TODO)
+    void loadLabels(const std::string& filename) {
+        return;
+    }
+
     /// Dumps the best state of the model to a file on the next occasion
     /**
      * This function is called by the SIGUSR1 signal handler to signal that
@@ -265,6 +271,9 @@ public:
         m_pGraph = loadGraph(m_args.inputFile);
         info(">> graph has %ld vertices and %ld edges",
              (long)m_pGraph->vcount(), (long)m_pGraph->ecount());
+
+        info(">> loading labels: %s", m_args.labelsFile.c_str());
+        loadLabels(m_args.labelsFile);
 
         debug(">> using random seed: %lu", m_args.randomSeed);
         m_mcmc.getRNG()->init_genrand(m_args.randomSeed);
