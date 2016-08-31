@@ -156,6 +156,10 @@ void Blockmodel::setGraph(igraph::Graph* graph) {
     }
 }
 
+void Blockmodel::setLabels(Vector* labels) {
+    m_pLabels = labels;
+}
+
 void Blockmodel::setNumTypes(int numTypes) {
     if (numTypes <= 0)
         throw std::runtime_error("must have at least one type");

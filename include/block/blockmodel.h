@@ -51,6 +51,9 @@ protected:
     /// Pointer to a graph to which this model will be fitted
     igraph::Graph* m_pGraph;
 
+    /// Pointer to labels to which this model will be fitted
+    igraph::Vector* m_pLabels;
+
     /// The number of types in the model
     int m_numTypes;
 
@@ -244,6 +247,9 @@ public:
      * of vertices in the graph and the edge counts will be re-calculated.
      */
     virtual void setGraph(igraph::Graph* graph);
+
+    /// Sets the labels associated to the model
+    virtual void setLabels(igraph::Vector* labels);
 
     /// Sets the number of types
     /**
