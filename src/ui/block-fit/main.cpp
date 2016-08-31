@@ -29,6 +29,9 @@ private:
     /// Graph being analyzed by the UI
     std::auto_ptr<Graph> m_pGraph;
 
+    // Labels provided explicitly
+    Vector labels;
+
     /// Blockmodel being fitted to the graph
     std::auto_ptr<Blockmodel> m_pModel;
 
@@ -191,8 +194,21 @@ public:
     }
 
     /// Loads labels from the given file (TODO)
-    void loadLabels(const std::string& filename) {
-        return;
+    Vector loadLabels(const std::string& filename, const igraph::Graph& graph) {
+        long int n = graph.vcount();
+        Vector labels(n);
+        std::ifstream reading_file;
+        reading_file.open(filename, std::ios::in);
+        std::string reading_line_buffer;
+
+        int i = 0;
+        while (!reading_file.eof())
+        {
+          std::getline(reading_file, reading_line_buffer);
+          labels[i] = atoi(reading_line_buffer.c_str());
+        }
+
+        return labels;
     }
 
     /// Dumps the best state of the model to a file on the next occasion
@@ -273,7 +289,7 @@ public:
              (long)m_pGraph->vcount(), (long)m_pGraph->ecount());
 
         info(">> loading labels: %s", m_args.labelsFile.c_str());
-        loadLabels(m_args.labelsFile);
+        labels = loadLabels(m_args.labelsFile, *m_pGraph);
 
         debug(">> using random seed: %lu", m_args.randomSeed);
         m_mcmc.getRNG()->init_genrand(m_args.randomSeed);
