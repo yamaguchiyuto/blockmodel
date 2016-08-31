@@ -603,6 +603,10 @@ void DegreeCorrectedUndirectedBlockmodel::setRates(const igraph::Matrix& r) {
     recountEdges();
 }
 
+void DegreeCorrectedUndirectedBlockmodel::setAgreement(const float agreement) {
+    m_agreement = agreement;
+}
+
 void DegreeCorrectedUndirectedBlockmodel::setType(long index, int newType) {
     int oldType = m_types[index];
     if (m_types[index] == newType)

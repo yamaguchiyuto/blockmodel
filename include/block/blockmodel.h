@@ -57,6 +57,9 @@ protected:
     /// The number of types in the model
     int m_numTypes;
 
+    // ratio of the number of labeled nodes where gi=yi
+    float m_agreement;
+
     /// Vector storing the vertex types
     igraph::Vector m_types;
 
@@ -486,6 +489,9 @@ public:
      * (i.e. m_pGraph is NULL).
      */
     void setRates(const igraph::Matrix& r);
+
+    /// Sets the agreement.
+    void setAgreement(const float agreement);
 
     /// Sets the type of a single vertex
     virtual void setType(long index, int newType);
