@@ -488,6 +488,25 @@ double DegreeCorrectedUndirectedBlockmodel::getLogLikelihoodIncrease(
 	// Affected are all the nodes in groups r and s
 	result += b(m_sumOfDegreesByType[r]) - b(m_sumOfDegreesByType[r] - degree);
 	result += b(m_sumOfDegreesByType[s]) - b(m_sumOfDegreesByType[s] + degree);
+
+  if (m_labels[mutation.vertex] != -1) {
+      float num = 0;
+      float den = 0;
+      for (size_t i=0; i < m_labels.size(); i++) {
+          if (m_labels[i] != -1) {
+              den += 1;
+              if (m_labels[i] == m_types[i]) num += 1;
+          }
+      }
+      float alpha = num/den;
+      if (m_types[mutation.vertex] == m_labels[mutation.vertex])
+          alpha -= 1.0/den;
+      float delta = std::log((alpha+1.0/den)/(1-alpha)) + std::log(m_numTypes);
+      if (m_labels[mutation.vertex] == r)
+          result -= delta;
+      else if (m_labels[mutation.vertex] == s)
+          result += delta;
+  }
 	
 	return result;
 }

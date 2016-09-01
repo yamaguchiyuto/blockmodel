@@ -79,7 +79,7 @@ protected:
 public:
     /// Constructs a new blockmodel not associated with any given graph
     explicit Blockmodel()
-        : m_pGraph(0), m_numTypes(0), m_types(),
+        : m_pGraph(0), m_labels(), m_numTypes(0), m_types(),
 		  m_typeCounts(), m_edgeCounts(), m_logLikelihood(1) {
     }
 	

@@ -30,7 +30,7 @@ private:
     std::auto_ptr<Graph> m_pGraph;
 
     // Labels provided explicitly
-    Vector labels;
+    Vector m_labels;
 
     /// Blockmodel being fitted to the graph
     std::auto_ptr<Blockmodel> m_pModel;
@@ -56,13 +56,13 @@ public:
     LOGGING_FUNCTION(error, 0);
 
     /// Constructor
-    BlockmodelFittingApp() : m_pGraph(0), m_pModel(0),
+    BlockmodelFittingApp() : m_pGraph(0), m_labels(), m_pModel(0),
         m_bestLogL(-std::numeric_limits<double>::max()),
         m_pBestModel(0), m_dumpBestStateFlag(false),
         m_pModelWriter(0) {}
 
 	/// Constructs a new model
-	std::auto_ptr<Blockmodel> constructNewModel(Graph* pGraph=0, int numTypes=0) {
+	std::auto_ptr<Blockmodel> constructNewModel(Vector& m_labels, Graph* pGraph=0, int numTypes=0) {
 		std::auto_ptr<Blockmodel> result;
 
 		switch (m_args.modelType) {
@@ -79,6 +79,7 @@ public:
 		}
 
 		result->setGraph(pGraph);
+    result->setLabels(m_labels);
 		result->setNumTypes(numTypes);
 
 		return result;
@@ -100,8 +101,8 @@ public:
         bool converged = false;
         Vector samples(m_args.blockSize);
 
-		m_pModel = constructNewModel(m_pGraph.get(), groupCount);
-		m_pBestModel = constructNewModel(m_pGraph.get(), groupCount);
+		m_pModel = constructNewModel(m_labels, m_pGraph.get(), groupCount);
+		m_pBestModel = constructNewModel(m_labels, m_pGraph.get(), groupCount);
 
         if (groupCount < 2) {
             m_pBestModel->assignFrom(m_pModel);
@@ -193,7 +194,7 @@ public:
         return result;
     }
 
-    /// Loads labels from the given file (TODO)
+    /// Loads labels from the given file
     Vector loadLabels(const std::string& filename, const igraph::Graph& graph) {
         long int n = graph.vcount();
         Vector labels(n);
@@ -206,6 +207,7 @@ public:
         {
           std::getline(reading_file, reading_line_buffer);
           labels[i] = atoi(reading_line_buffer.c_str());
+          i++;
         }
 
         return labels;
@@ -289,7 +291,7 @@ public:
              (long)m_pGraph->vcount(), (long)m_pGraph->ecount());
 
         info(">> loading labels: %s", m_args.labelsFile.c_str());
-        labels = loadLabels(m_args.labelsFile, *m_pGraph);
+        m_labels = loadLabels(m_args.labelsFile, *m_pGraph);
 
         debug(">> using random seed: %lu", m_args.randomSeed);
         m_mcmc.getRNG()->init_genrand(m_args.randomSeed);
@@ -300,7 +302,7 @@ public:
             info(">> AIC = %.4f", aic(*m_pModel));
         } else {
 			std::auto_ptr<Blockmodel> pModelWithBestTypeCount =
-                constructNewModel(m_pGraph.get(), 1);
+                constructNewModel(m_labels, m_pGraph.get(), 1);
             double currentAIC, bestAIC = std::numeric_limits<double>::infinity();
 
             /* Find the optimal type count */
