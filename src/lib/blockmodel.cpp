@@ -156,8 +156,8 @@ void Blockmodel::setGraph(igraph::Graph* graph) {
     }
 }
 
-void Blockmodel::setLabels(Vector* labels) {
-    m_pLabels = labels;
+void Blockmodel::setLabels(const Vector& labels) {
+    m_labels = labels;
 }
 
 void Blockmodel::setNumTypes(int numTypes) {
@@ -508,12 +508,32 @@ double DegreeCorrectedUndirectedBlockmodel::recalculateLogLikelihood() const {
         ec = m_edgeCounts(i, i);
         if (ec > 0) {
             result += 0.5 * ec * (std::log(ec) - 1);
-		}
+        }
 
         for (int j = i+1; j < m_numTypes; j++) {
             ec = m_edgeCounts(i, j);
             if (ec > 0)
                 result += ec * (std::log(ec) - 1);
+        }
+    }
+
+    float num = 0;
+    float den = 0;
+    for (size_t i=0; i < m_labels.size(); i++) {
+        if (m_labels[i] != -1) {
+            den += 1;
+            if (m_labels[i] == m_types[i]) num += 1;
+        }
+    }
+    float logAlpha = std::log(num/den);
+    float logBeta = std::log((1-num/den)/(m_numTypes-1));
+
+    for (size_t i=0; i < m_labels.size(); i++) {
+        if (m_labels[i] != -1) {
+            if (m_labels[i] == m_types[i])
+                 result += logAlpha;
+            else
+                 result += logBeta;
         }
     }
 
